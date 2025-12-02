@@ -123,7 +123,7 @@ jobs:
           
           **Quick Install (Recommended):**
           ```bash
-          curl -sSL https://raw.githubusercontent.com/arm/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
+          curl -sSL https://raw.githubusercontent.com/${{ github.repository_owner }}/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
           ```
           
           **Manual Download:**
