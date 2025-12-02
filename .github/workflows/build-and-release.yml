@@ -13,13 +13,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04-arm
+    concurrency:
+      group: build-${{ github.ref }}-${{ matrix.arch }}
+      cancel-in-progress: true
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-22.04-arm
+            arch: arm64
+          - runner: ubuntu-22.04
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: write  # Required for creating releases and uploading assets
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Ensure tags and full history are available
 
     - name: Install dependencies
       run: |
@@ -38,7 +50,7 @@ jobs:
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-        echo "Building version: $VERSION"
+        echo "Building version: $VERSION for ${{ matrix.arch }}"
 
     - name: Build project
       run: |
@@ -48,13 +60,13 @@ jobs:
     - name: Find generated tar file
       id: find_tar
       run: |
-        TAR_FILE=$(find . -name "arm-migration-tools-v*.tar.gz" -type f | head -1)
+        TAR_FILE=$(find . -name "arm-migration-tools-v*.tar.gz" -type f | sort | head -1)
         if [[ -z "$TAR_FILE" ]]; then
           echo "Error: No tar file found matching pattern arm-migration-tools-v*.tar.gz"
           exit 1
         fi
         echo "tar_file=$TAR_FILE" >> $GITHUB_OUTPUT
-        echo "tar_name=$(basename $TAR_FILE)" >> $GITHUB_OUTPUT
+        echo "tar_name=$(basename "$TAR_FILE")" >> $GITHUB_OUTPUT
         echo "Found tar file: $TAR_FILE"
 
     - name: Verify tar file
@@ -62,6 +74,40 @@ jobs:
         TAR_FILE="${{ steps.find_tar.outputs.tar_file }}"
         echo "Verifying tar file: $TAR_FILE"
         ls -lh "$TAR_FILE"
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: arm-migration-tools-${{ steps.get_version.outputs.version }}-${{ matrix.arch }}
+        path: ${{ steps.find_tar.outputs.tar_file }}
+        retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-22.04
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: write
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Extract version
+      id: get_version
+      run: |
+        if [[ "${{ github.event_name }}" == "push" ]]; then
+          VERSION=${GITHUB_REF#refs/tags/v}
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+        else
+          VERSION="${{ github.event.inputs.version }}"
+          TAG_NAME="v$VERSION"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -80,8 +126,12 @@ jobs:
           curl -sSL https://raw.githubusercontent.com/arm/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
           ```
           
+          **Manual Download:**
+          - ARM64: `arm-migration-tools-v${{ steps.get_version.outputs.version }}-arm64.tar.gz`
+          - x86_64: `arm-migration-tools-v${{ steps.get_version.outputs.version }}-x86_64.tar.gz`
+          
           ### System Requirements
-          - **Architecture**: Arm (aarch64)
+          - **Architecture**: ARM64 (aarch64) or x86_64
           - **Operating System**: Linux (Ubuntu 22.04/24.04 recommended)
           - **Dependencies**: Python 3, build tools, and package manager (apt/yum/dnf)
           
@@ -89,13 +139,6 @@ jobs:
           This package includes: Sysreport, Skopeo, MCA (llvm-mca), Topdown Tool, KubeArchInspect, Migrate Ease, Aperf, BOLT, PAPI, Perf, Process Watch, Check Image, and Porting Advisor.
           
           For detailed documentation, visit [learn.arm.com](https://learn.arm.com).
-        files: ${{ steps.find_tar.outputs.tar_file }}
+        files: artifacts/**/*.tar.gz
         draft: false
         prerelease: false
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: arm-migration-tools-${{ steps.get_version.outputs.version }}
-        path: ${{ steps.find_tar.outputs.tar_file }}
-        retention-days: 30

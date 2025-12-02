@@ -92,11 +92,11 @@ Download the release tarball and install locally:
 # create new directory for the download
 mkdir arm-migration-tools && cd arm-migration-tools
 
-# Download the latest release
-wget https://github.com/arm/arm-linux-migration-tools/releases/latest/download/arm-migration-tools-v1.tar.gz
+# Download the latest release (replace ARCH with arm64 or x86_64)
+wget https://github.com/arm/arm-linux-migration-tools/releases/latest/download/arm-migration-tools-v1-arm64.tar.gz
 
 # Extract and install
-tar xzf arm-migration-tools-v1.tar.gz
+tar xzf arm-migration-tools-v1-arm64.tar.gz
 sudo ./scripts/install.sh
 ```
 
@@ -114,8 +114,9 @@ The `build.sh` script will:
 - Build all tools from source where required
 - Download and configure package-manager tools
 - Create Python virtual environments for Python-based tools
-- Package everything into a distributable tarball (`arm-migration-tools-v[version].tar.gz`)
+- Package everything into a distributable tarball (`arm-migration-tools-v[version]-[arch].tar.gz`)
 - The default version is 1 but you can pass an integer to `./build.sh` to set a new version number.
+- Architecture (arm64 or x86_64) is automatically detected from the build system.
 
 ### Uninstall
 
