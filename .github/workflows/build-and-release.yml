@@ -91,6 +91,9 @@ jobs:
     permissions:
       contents: write
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
@@ -139,6 +142,9 @@ jobs:
           This package includes: Sysreport, Skopeo, MCA (llvm-mca), Topdown Tool, KubeArchInspect, Migrate Ease, Aperf, BOLT, PAPI, Perf, Process Watch, Check Image, and Porting Advisor.
           
           For detailed documentation, visit [learn.arm.com](https://learn.arm.com).
-        files: artifacts/**/*.tar.gz
+        files: |
+          artifacts/**/*.tar.gz
+          scripts/install.sh
+          scripts/uninstall.sh
         draft: false
         prerelease: false
