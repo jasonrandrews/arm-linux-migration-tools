@@ -24,19 +24,19 @@ You can install the tools using a single command or download the tar file and ru
 Install directly from the latest GitHub release:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/arm/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
+curl -sSL https://github.com/arm/arm-linux-migration-tools/releases/latest/download/install.sh | sudo bash
 ```
 
 ### Download and install
 
-Download the release tarball and install on your computer:
+Download a release release tar file and install on your computer:
 
 ```bash
 # Download the latest release (replace ARCH with arm64 or x86_64)
-wget https://github.com/arm/arm-linux-migration-tools/releases/latest/download/arm-migration-tools-v1-arm64.tar.gz
+wget https://github.com/arm/arm-linux-migration-tools/releases/latest/download/arm-migration-tools-v2-arm64.tar.gz
 
 # Extract and install
-tar xzf arm-migration-tools-v1-arm64.tar.gz
+tar xzf arm-migration-tools-v2-arm64.tar.gz
 sudo ./scripts/install.sh
 ```
 

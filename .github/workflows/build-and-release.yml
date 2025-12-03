@@ -124,17 +124,17 @@ jobs:
           
           ### Installation
           
-          **Quick Install (Recommended):**
+          **Quick Install:**
           ```bash
-          curl -sSL https://raw.githubusercontent.com/${{ github.repository_owner }}/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
+          curl -sSL https://github.com/${{ github.repository_owner }}/arm-linux-migration-tools/releases/download/${{ steps.get_version.outputs.tag_name }}/install.sh | sudo bash
           ```
           
           **Manual Download:**
-          - ARM64: `arm-migration-tools-v${{ steps.get_version.outputs.version }}-arm64.tar.gz`
+          - arm64: `arm-migration-tools-v${{ steps.get_version.outputs.version }}-arm64.tar.gz`
           - x86_64: `arm-migration-tools-v${{ steps.get_version.outputs.version }}-x86_64.tar.gz`
           
           ### System Requirements
-          - **Architecture**: ARM64 (aarch64) or x86_64
+          - **Architecture**: arm64 (aarch64) or x86_64
           - **Operating System**: Linux (Ubuntu 22.04/24.04 recommended)
           - **Dependencies**: Python 3, build tools, and package manager (apt/yum/dnf)
           
