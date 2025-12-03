@@ -13,10 +13,74 @@ The Arm Linux Migration Tools package simplifies the process of migrating applic
     - Note (macOS/Colima): perf relies on Linux kernel PMU support and is not supported on macOS/Colima (XNU kernel). The test script will mark it as SKIPPED in these environments.
 
 - **Dependencies**: 
-  - Python 3 (≥3.10 recommended; required for running **Porting Advisor**)
-  - Build tools (e.g. gcc, g++, make) 
-  - Package manager (apt/yum/dnf)
   - Docker/Podman (required for migrate-ease-docker)
+
+## Installation 
+
+You can install the tools using a single command or download the tar file and run in the install script. Pick either alternative. 
+
+### Single line installation
+
+Install directly from the latest GitHub release:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/arm/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
+```
+
+### Download and install
+
+Download the release tarball and install on your computer:
+
+```bash
+# Download the latest release (replace ARCH with arm64 or x86_64)
+wget https://github.com/arm/arm-linux-migration-tools/releases/latest/download/arm-migration-tools-v1-arm64.tar.gz
+
+# Extract and install
+tar xzf arm-migration-tools-v1-arm64.tar.gz
+sudo ./scripts/install.sh
+```
+
+### Uninstall
+
+You can uninstall by running:
+
+```bash
+/opt/arm-migration-tools/scripts/uninstall.sh
+```
+
+**Note** 
+The uninstall script:
+- Removes `/opt/arm-migration-tools`  
+- Removes wrappers in `/usr/local/bin`  
+- Removes system packages (perf, llvm-mca, skopeo) where installed  
+
+### Build from Source
+
+To build all tools from source:
+
+```bash
+git clone https://github.com/arm/arm-linux-migration-tools.git
+cd arm-linux-migration-tools
+./scripts/build.sh 
+```
+
+The `build.sh` script will:
+- Build all tools from source where required
+- Download and configure package-manager tools
+- Create Python virtual environments for Python-based tools
+- Package everything into a distributable tarball (`arm-migration-tools-v[version]-[arch].tar.gz`)
+- The default version is 1 but you can pass an integer to `./build.sh` to set a new version number.
+- Architecture (arm64 or x86_64) is automatically detected from the build system.
+
+When the build is complete install the tools using:
+
+```bash
+./scripts/install.sh
+```
+
+**Note:** Both install and uninstall scripts can be run multiple times.
+- Running `install.sh` again will detect already-installed tools and skip re-installation.  
+- Running `uninstall.sh` again will simply confirm that everything is already removed.
 
 ## Tool Notes
 
@@ -72,74 +136,7 @@ The Arm Linux Migration Tools package simplifies the process of migrating applic
   - Ubuntu 22.04/24.04 meet this requirement.  
   - Amazon Linux 2023 defaults to Python 3.9 → binary installs but won’t run unless Python is upgraded.
 
-## Quick Start
 
-### Installation
-
-#### Option 1: Remote Installation (Recommended)
-
-Install directly from the latest GitHub release:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/arm/arm-linux-migration-tools/main/scripts/install.sh | sudo bash
-```
-
-#### Option 2: Local Installation
-
-Download the release tarball and install locally:
-
-```bash
-# create new directory for the download
-mkdir arm-migration-tools && cd arm-migration-tools
-
-# Download the latest release (replace ARCH with arm64 or x86_64)
-wget https://github.com/arm/arm-linux-migration-tools/releases/latest/download/arm-migration-tools-v1-arm64.tar.gz
-
-# Extract and install
-tar xzf arm-migration-tools-v1-arm64.tar.gz
-sudo ./scripts/install.sh
-```
-
-### Build from Source
-
-To build all tools from source:
-
-```bash
-git clone https://github.com/arm/arm-linux-migration-tools.git
-cd arm-linux-migration-tools
-./scripts/build.sh 
-```
-
-The `build.sh` script will:
-- Build all tools from source where required
-- Download and configure package-manager tools
-- Create Python virtual environments for Python-based tools
-- Package everything into a distributable tarball (`arm-migration-tools-v[version]-[arch].tar.gz`)
-- The default version is 1 but you can pass an integer to `./build.sh` to set a new version number.
-- Architecture (arm64 or x86_64) is automatically detected from the build system.
-
-### Uninstall
-
-You can uninstall by running:
-
-```bash
-/opt/arm-migration-tools/scripts/uninstall.sh
-```
-**Note** 
-The uninstall script:
-- Removes `/opt/arm-migration-tools`  
-- Removes wrappers in `/usr/local/bin`  
-- Removes system packages (perf, llvm-mca, skopeo) where installed  
-
-You can also download and run the uninstall:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/arm/arm-linux-migration-tools/main/scripts/uninstall.sh | bash
-```
-
-**Note:** Both install and uninstall scripts are **idempotent**.  
-- Running `install.sh` again will detect already-installed tools and skip re-installation.  
-- Running `uninstall.sh` again will simply confirm that everything is already removed.
 
 This package includes 13 essential migration and analysis tools:
 

@@ -145,6 +145,5 @@ jobs:
         files: |
           artifacts/**/*.tar.gz
           scripts/install.sh
-          scripts/uninstall.sh
         draft: false
         prerelease: false
