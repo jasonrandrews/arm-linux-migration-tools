@@ -3,12 +3,20 @@
 # Supports both local installation (with tarball) and remote installation (via curl)
 set -e
 
-# Check for Arm Linux (aarch64)
+# Check architecture
 ARCH=$(uname -m)
-if [ "$ARCH" != "aarch64" ]; then
-  echo "[ERROR] This installer is intended for Arm 64-bit (aarch64) Linux systems. Detected: $ARCH" >&2
-  exit 1
-fi
+case "$ARCH" in
+  aarch64|arm64)
+    ARCH_NORM="arm64"
+    ;;
+  x86_64|amd64)
+    ARCH_NORM="x86_64"
+    ;;
+  *)
+    echo "[ERROR] Unsupported architecture: $ARCH" >&2
+    exit 1
+    ;;
+esac
 
 INSTALL_PREFIX="/opt/arm-migration-tools"
 GITHUB_REPO="arm/arm-migration-tools"
@@ -45,7 +53,7 @@ if [ "$REMOTE_INSTALL" = true ]; then
   fi
   
   VERSION="$LATEST_TAG"
-  DOWNLOAD_URL="https://github.com/$GITHUB_REPO/releases/download/v$LATEST_TAG/arm-migration-tools-v$LATEST_TAG.tar.gz"
+  DOWNLOAD_URL="https://github.com/$GITHUB_REPO/releases/download/v$LATEST_TAG/arm-migration-tools-v$LATEST_TAG-$ARCH_NORM.tar.gz"
   echo "[INFO] Downloading version v$LATEST_TAG from $DOWNLOAD_URL..."
   
   # Create temporary directory and download
@@ -81,9 +89,9 @@ else
       exit 1
     fi
     TAR_FILE="$LATEST_TAR"
-    VERSION=$(echo "$TAR_FILE" | sed -E 's/.*-v([0-9]+)\.tar\.gz/\1/')
+    VERSION=$(echo "$TAR_FILE" | sed -E 's/.*-v([0-9]+)-.*/\1/')
   else
-    TAR_FILE="arm-migration-tools-v$VERSION.tar.gz"
+    TAR_FILE="arm-migration-tools-v$VERSION-$ARCH_NORM.tar.gz"
   fi
 
   if [ ! -f "$TAR_FILE" ]; then

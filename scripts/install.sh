@@ -209,9 +209,9 @@ else
       exit 1
     fi
     TAR_FILE="$LATEST_TAR"
-    AMT_VERSION=$(echo "$TAR_FILE" | sed -E 's/.*-v([0-9]+)\.tar\.gz/\1/')
+    AMT_VERSION=$(echo "$TAR_FILE" | sed -E 's/.*-v([0-9]+)-.*/\1/')
   else
-    TAR_FILE="arm-migration-tools-v$AMT_VERSION.tar.gz"
+    TAR_FILE="arm-migration-tools-v$AMT_VERSION-$ARCH_NORM.tar.gz"
   fi
 
   if [ ! -f "$TAR_FILE" ]; then

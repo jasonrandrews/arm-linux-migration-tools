@@ -4,6 +4,23 @@
 # Versioning: pass as first argument, default to 1
 VERSION="${1:-1}"
 
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)
+        ARCH_NAME="x86_64"
+        ;;
+    aarch64|arm64)
+        ARCH_NAME="arm64"
+        ;;
+    *)
+        echo "[ERROR] Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+echo "[INFO] Building for architecture: $ARCH_NAME"
+
 # Set package root for staging files (default to current directory)
 PACKAGE_ROOT="$(pwd)"
 
@@ -25,7 +42,7 @@ bash "$(dirname "$0")/build_migrate_ease.sh"
 echo "[INFO] Build process complete."
 
 # Package all built tools into a single tarball
-PACKAGE_NAME="arm-migration-tools-v$VERSION.tar.gz"
+PACKAGE_NAME="arm-migration-tools-v$VERSION-$ARCH_NAME.tar.gz"
 PACKAGE_CONTENTS="sysreport kubearchinspect aperf bolt-tools porting-advisor-for-graviton requirements.txt processwatch/processwatch telemetry-solution/tools/topdown_tool src/check-image.py scripts papi-install migrate-ease" # Include entire scripts directory
 
 echo "[INFO] Creating $PACKAGE_NAME with: $PACKAGE_CONTENTS"

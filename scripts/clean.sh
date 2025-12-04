@@ -9,9 +9,9 @@ if [ -d sysreport ]; then
 fi
 
 # Remove generated tarball
-if [ -f arm-migration-tools.tar.gz ]; then
-  echo "[INFO] Removing arm-migration-tools.tar.gz..."
-  rm -f arm-migration-tools.tar.gz
+if ls arm-migration-tools*.tar.gz 1> /dev/null 2>&1; then
+  echo "[INFO] Removing arm-migration-tools tarballs..."
+  rm -f arm-migration-tools*.tar.gz
 fi
 
 # Remove KubeArchInspect tarball and directory
